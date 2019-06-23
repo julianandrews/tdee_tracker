@@ -1,0 +1,23 @@
+name: tdee_tracker
+description: An adaptive TDEE tracker using caloric intake and weight measurements.
+
+version: 0.2.0+1
+
+environment:
+  sdk: ">=2.1.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^0.1.2
+  intl: ^0.15.8
+  sqflite: ^1.1.5
+  path_provider: ^1.1.0
+  provider: ^2.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
