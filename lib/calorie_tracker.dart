@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'add_entry_form.dart';
+import 'entry_form.dart';
 import 'date.dart';
 import 'entry_list.dart';
 import 'models.dart';
@@ -46,33 +46,70 @@ class _CalorieTrackerState extends State<CalorieTracker> {
   }
 }
 
+enum EntryAction {
+  Delete,
+  Edit,
+}
+
 class _EntriesForDate extends StatelessWidget {
   final Date date;
 
   _EntriesForDate({Key key, this.date}) : super(key: key);
 
+  _showEntryOptions(BuildContext context, EntryList entryList, Entry entry) async {
+    switch (await showDialog<EntryAction>(
+      context: context,
+      builder: (BuildContext context) => SimpleDialog(
+            title: const Text('Action'),
+            children: <Widget>[
+              SimpleDialogOption(
+                onPressed: () => Navigator.pop(context, EntryAction.Edit),
+                child: const Text('Edit'),
+              ),
+              SimpleDialogOption(
+                onPressed: () => Navigator.pop(context, EntryAction.Delete),
+                child: const Text('Delete'),
+              ),
+            ],
+          ),
+    )) {
+      case EntryAction.Edit:
+        Navigator.push(context, MaterialPageRoute(builder: (context) => EditEntryPage(entry: entry)));
+        Scaffold.of(context).showSnackBar(SnackBar(content: Text('Entry Saved')));
+        break;
+      case EntryAction.Delete:
+        await entryList.delete(entry);
+        Scaffold.of(context).showSnackBar(SnackBar(content: Text('Entry Deleted')));
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     // TODO: Handle the empty entry list with a nice indicator.
-    return Consumer<EntryList>(
-        builder: (context, entryList, child) {
-          var entries = entryList.forDate(date)
-                    .map((entry) => _EntryRow(entry: entry))
-                    .toList();
-          return Column(children: <Widget>[
-              Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: _EntriesHeader(
-                      date: date,
-                      totalCalories: entryList.totalCalories(date))),
-              Expanded(
-                  child: ListView.separated(
-                      itemBuilder: (context, index) => entries[index],
-                      itemCount: entries.length,
-                    separatorBuilder: (BuildContext context, int index) => const Divider(),
-              )),
-            ]);
-        });
+    return Consumer<EntryList>(builder: (context, entryList, child) {
+      var entryRows = entryList
+          .forDate(date)
+          .map((entry) => InkWell(
+                onTap: () => _showEntryOptions(context, entryList, entry),
+                child: _EntryRow(entry: entry),
+              ))
+          .toList();
+      return Column(children: <Widget>[
+        Padding(
+            padding: EdgeInsets.all(8.0),
+            child: _EntriesHeader(
+                date: date, totalCalories: entryList.totalCalories(date))),
+        Expanded(
+            child: Scrollbar(
+                child: ListView.separated(
+          itemBuilder: (context, index) => entryRows[index],
+          itemCount: entryRows.length,
+          separatorBuilder: (BuildContext context, int index) =>
+              const Divider(),
+        ))),
+      ]);
+    });
   }
 }
 
@@ -82,6 +119,7 @@ class _EntriesHeader extends StatelessWidget {
 
   _EntriesHeader({Key key, this.date, this.totalCalories}) : super(key: key);
 
+  // TODO: Make this attractive, and add in a progress bar once we have a goal set.
   @override
   Widget build(BuildContext context) {
     return Row(children: [

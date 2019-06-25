@@ -36,17 +36,36 @@ class CalorieTrackerDatabase {
     });
   }
 
+  updateEntry(Entry entry) async {
+    final db = await database;
+    await db.update(
+        'entries',
+        {
+          'date': entry.date.isoFormat,
+          'name': entry.name,
+          'calories': entry.calories,
+        },
+        where: 'id = ?',
+        whereArgs: [entry.id]);
+  }
+
+  deleteEntry(Entry entry) async {
+    final db = await database;
+    await db.delete('entries', where: 'id = ?', whereArgs: [entry.id]);
+  }
+
   Future<List<Entry>> listEntries() async {
     final db = await database;
     var results = await db.query('entries');
     return results.isNotEmpty
         ? results
             .map((row) => Entry(
-                id: row['id'],
-                name: row['name'],
-                calories: row['calories'],
-                date: Date.parse(row['date']),
-            )).toList()
+                  id: row['id'],
+                  name: row['name'],
+                  calories: row['calories'],
+                  date: Date.parse(row['date']),
+                ))
+            .toList()
         : [];
   }
 
@@ -64,9 +83,10 @@ class CalorieTrackerDatabase {
     return results.isNotEmpty
         ? results
             .map((row) => Weight(
-                id: row['id'],
-                time: DateTime.fromMillisecondsSinceEpoch(row['timestamp']),
-                weight: row['weight'],))
+                  id: row['id'],
+                  time: DateTime.fromMillisecondsSinceEpoch(row['timestamp']),
+                  weight: row['weight'],
+                ))
             .toList()
         : [];
   }
