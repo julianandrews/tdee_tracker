@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-import 'calorie_tracker.dart';
+import 'calorie_screens.dart';
 import 'entry_list.dart';
 import 'settings_screen.dart';
 import 'weight_list.dart';
-import 'weight_tracker.dart';
+import 'weight_screens.dart';
 
 class HomeScreen extends StatelessWidget {
   @override

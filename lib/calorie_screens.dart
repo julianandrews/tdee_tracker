@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter/services.dart';
 
-import 'date.dart';
-import 'entry_form.dart';
-import 'entry_list.dart';
-import 'models.dart';
+import 'database/entry_list.dart';
+import 'database/models.dart';
 
 class CalorieTracker extends StatefulWidget {
   @override
@@ -44,7 +43,7 @@ class _CalorieTrackerState extends State<CalorieTracker> {
   }
 }
 
-enum EntryAction {
+enum _EntryAction {
   Delete,
   Edit,
 }
@@ -55,28 +54,28 @@ class _EntriesForDate extends StatelessWidget {
   _EntriesForDate({Key key, this.date}) : super(key: key);
 
   _showActions(BuildContext context, EntryList entryList, Entry entry) async {
-    switch (await showDialog<EntryAction>(
+    switch (await showDialog<_EntryAction>(
       context: context,
       builder: (BuildContext context) => SimpleDialog(
             title: const Text('Action'),
             children: <Widget>[
               SimpleDialogOption(
-                onPressed: () => Navigator.pop(context, EntryAction.Edit),
+                onPressed: () => Navigator.pop(context, _EntryAction.Edit),
                 child: const Text('Edit'),
               ),
               SimpleDialogOption(
-                onPressed: () => Navigator.pop(context, EntryAction.Delete),
+                onPressed: () => Navigator.pop(context, _EntryAction.Delete),
                 child: const Text('Delete'),
               ),
             ],
           ),
     )) {
-      case EntryAction.Edit:
+      case _EntryAction.Edit:
         Navigator.pushNamed(context, EditEntryScreen.routeName, arguments: entry);
         Scaffold.of(context)
             .showSnackBar(SnackBar(content: Text('Entry Saved')));
         break;
-      case EntryAction.Delete:
+      case _EntryAction.Delete:
         await entryList.delete(entry);
         Scaffold.of(context)
             .showSnackBar(SnackBar(content: Text('Entry Deleted')));
@@ -146,5 +145,107 @@ class _EntryRow extends StatelessWidget {
           )),
           Text("${entry.calories}"),
         ]));
+  }
+}
+class AddEntryScreen extends StatelessWidget {
+  static const routeName = '/entry/add';
+
+  @override
+  Widget build(BuildContext context) {
+    final Date date = ModalRoute.of(context).settings.arguments;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Add entry for ${date.display}'),
+      ),
+      body: _EntryForm(Entry(date: date)),
+    );
+  }
+}
+
+class EditEntryScreen extends StatelessWidget {
+  static const routeName = '/entry/edit';
+
+  @override
+  Widget build(BuildContext context) {
+    final Entry entry = ModalRoute.of(context).settings.arguments;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Edit entry'),
+      ),
+      body: _EntryForm(entry),
+    );
+  }
+}
+
+class _EntryForm extends StatefulWidget {
+  final Entry initialValue;
+
+  _EntryForm(this.initialValue);
+
+  @override
+  _EntryFormState createState() => _EntryFormState();
+}
+
+class _EntryFormState extends State<_EntryForm> {
+  TextEditingController _descriptionController;
+  TextEditingController _caloriesController;
+  bool _saveEnabled;
+
+  @override
+  initState() {
+    _descriptionController = TextEditingController(text: widget.initialValue.name);
+    _caloriesController =
+        TextEditingController(text: widget.initialValue.calories?.toString());
+    _saveEnabled = !_descriptionController.text.isEmpty;
+  }
+
+  _submitForm(context, entryList) async {
+    if (widget.initialValue.id == null) {
+      await entryList.add(Entry(
+        name: _descriptionController.text,
+        calories: int.parse(_caloriesController.text),
+        date: widget.initialValue.date,
+      ));
+    } else {
+      await entryList.update(Entry(
+        id: widget.initialValue.id,
+        name: _descriptionController.text,
+        calories: int.parse(_caloriesController.text),
+        date: widget.initialValue.date,
+      ));
+    }
+    Navigator.pop(context);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+        return Column(
+          children: <Widget>[
+            TextField(
+              controller: _descriptionController,
+              decoration: const InputDecoration(
+                hintText: 'Description of food',
+              ),
+              onChanged: (value) => setState(() => _saveEnabled = !value.isEmpty),
+            ),
+            TextField(
+              controller: _caloriesController,
+              decoration: const InputDecoration(
+                hintText: 'Calories',
+              ),
+              inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
+              keyboardType: TextInputType.number,
+            ),
+            Consumer<EntryList>(
+                builder: (context, entryList, child) => RaisedButton(
+                      onPressed: _saveEnabled
+                          ? () => _submitForm(context, entryList)
+                          : null,
+                      child: Text('Save'),
+                    )),
+          ],
+        );
   }
 }

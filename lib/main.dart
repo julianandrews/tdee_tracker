@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'home_screen.dart';
-import 'entry_form.dart';
-import 'entry_list.dart';
+import 'calorie_screens.dart';
 import 'settings_screen.dart';
-import 'weight_form.dart';
-import 'weight_list.dart';
+import 'weight_screens.dart';
+import 'database/entry_list.dart';
+import 'database/weight_list.dart';
 
 void main() => runApp(ChangeNotifierProvider(
     builder: (context) => EntryList(),
