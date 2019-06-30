@@ -25,7 +25,7 @@ class HomeScreen extends StatelessWidget {
               isScrollable: false,
               tabs: [
                 Tab(text: 'Calorie Tracker'),
-                Tab(text: 'Weighings'),
+                Tab(text: 'Weight Tracker'),
               ],
             ),
           ),
