@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import 'package:flutter/services.dart';
 
 import 'date.dart';
-import 'database.dart';
 import 'entry_list.dart';
 import 'models.dart';
 

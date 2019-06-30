@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'entry_form.dart';
 import 'date.dart';
+import 'entry_form.dart';
 import 'entry_list.dart';
 import 'models.dart';
 
@@ -12,7 +12,7 @@ class CalorieTracker extends StatefulWidget {
 }
 
 class _CalorieTrackerState extends State<CalorieTracker> {
-  // The earliest date you can swipe back to.
+  // PageView requires a first page - so this is it!
   static const earliestDate = Date(day: 1, month: 1, year: 1900);
   final initialPage =
       Date.fromDateTime(DateTime.now()).difference(earliestDate);
@@ -30,7 +30,6 @@ class _CalorieTrackerState extends State<CalorieTracker> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Calorie Tracker')),
       body: PageView.builder(
         controller: PageController(initialPage: initialPage),
         itemBuilder: (context, position) =>
@@ -56,7 +55,8 @@ class _EntriesForDate extends StatelessWidget {
 
   _EntriesForDate({Key key, this.date}) : super(key: key);
 
-  _showEntryOptions(BuildContext context, EntryList entryList, Entry entry) async {
+  _showActions(
+      BuildContext context, EntryList entryList, Entry entry) async {
     switch (await showDialog<EntryAction>(
       context: context,
       builder: (BuildContext context) => SimpleDialog(
@@ -74,12 +74,17 @@ class _EntriesForDate extends StatelessWidget {
           ),
     )) {
       case EntryAction.Edit:
-        Navigator.push(context, MaterialPageRoute(builder: (context) => EditEntryPage(entry: entry)));
-        Scaffold.of(context).showSnackBar(SnackBar(content: Text('Entry Saved')));
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => EditEntryPage(entry: entry)));
+        Scaffold.of(context)
+            .showSnackBar(SnackBar(content: Text('Entry Saved')));
         break;
       case EntryAction.Delete:
         await entryList.delete(entry);
-        Scaffold.of(context).showSnackBar(SnackBar(content: Text('Entry Deleted')));
+        Scaffold.of(context)
+            .showSnackBar(SnackBar(content: Text('Entry Deleted')));
         break;
     }
   }
@@ -91,7 +96,7 @@ class _EntriesForDate extends StatelessWidget {
       var entryRows = entryList
           .forDate(date)
           .map((entry) => InkWell(
-                onTap: () => _showEntryOptions(context, entryList, entry),
+                onTap: () => _showActions(context, entryList, entry),
                 child: _EntryRow(entry: entry),
               ))
           .toList();

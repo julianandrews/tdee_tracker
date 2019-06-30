@@ -77,6 +77,23 @@ class CalorieTrackerDatabase {
     });
   }
 
+  updateWeight(Weight weight) async {
+    final db = await database;
+    await db.update(
+        'weights',
+        {
+          'timestamp': weight.time.millisecondsSinceEpoch,
+          'weight': weight.weight
+        },
+        where: 'id = ?',
+        whereArgs: [weight.id]);
+  }
+
+  deleteWeight(Weight weight) async {
+    final db = await database;
+    await db.delete('weights', where: 'id = ?', whereArgs: [weight.id]);
+  }
+
   Future<List<Weight>> listWeights() async {
     final db = await database;
     var results = await db.query('weights');

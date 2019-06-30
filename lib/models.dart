@@ -22,7 +22,7 @@ class Entry {
 class Weight {
   int id;
   DateTime time;
-  int weight;
+  double weight;
 
   Weight({
     this.id,

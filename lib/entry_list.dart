@@ -7,13 +7,18 @@ import 'database.dart';
 import 'models.dart';
 
 class EntryList extends ChangeNotifier {
+  static final EntryList _singleton = new EntryList._internal();
   List<Entry> _entries = [];
 
-  EntryList() {
+  EntryList._internal() {
     CalorieTrackerDatabase().listEntries().then((entries) {
       _entries = entries;
       notifyListeners();
     });
+  }
+
+  factory EntryList() {
+    return _singleton;
   }
 
   UnmodifiableListView<Entry> forDate(Date date) {
