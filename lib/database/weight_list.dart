@@ -24,25 +24,25 @@ class WeightList extends ChangeNotifier {
     return UnmodifiableListView(_weights);
   }
 
-  void add(Weight entry) async {
-    assert(entry.id == null);
-    _weights.add(entry);
-    entry.id = await CalorieTrackerDatabase().insertWeight(entry);
+  void add(Weight weight) async {
+    assert(weight.id == null);
+    _weights.add(weight);
+    weight.id = await CalorieTrackerDatabase().insertWeight(weight);
     notifyListeners();
   }
 
-  void update(Weight entry) async {
-    assert(entry.id != null);
-    var index = _weights.indexWhere((e) => e.id == entry.id);
-    _weights[index] = entry;
-    await CalorieTrackerDatabase().updateWeight(entry);
+  void update(Weight weight) async {
+    assert(weight.id != null);
+    var index = _weights.indexWhere((e) => e.id == weight.id);
+    _weights[index] = weight;
+    await CalorieTrackerDatabase().updateWeight(weight);
     notifyListeners();
   }
 
-  void delete(Weight entry) async {
-    assert(entry.id != null);
-    _weights.removeWhere((e) => e.id == entry.id);
-    await CalorieTrackerDatabase().deleteWeight(entry);
+  void delete(Weight weight) async {
+    assert(weight.id != null);
+    _weights.removeWhere((e) => e.id == weight.id);
+    await CalorieTrackerDatabase().deleteWeight(weight);
     notifyListeners();
   }
 }
