@@ -11,9 +11,9 @@ import 'database/weight_list.dart';
 void main() => runApp(ChangeNotifierProvider(
     builder: (context) => EntryList(),
     child: ChangeNotifierProvider(
-        builder: (context) => WeightList(), child: MyApp())));
+        builder: (context) => WeightList(), child: TDEETrackerApp())));
 
-class MyApp extends StatelessWidget {
+class TDEETrackerApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
