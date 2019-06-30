@@ -160,7 +160,7 @@ class AddEntryScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text('Add entry for ${date.display}'),
       ),
-      body: _EntryForm(Entry(date: date)),
+      body: _EntryForm(initialValue: Entry(date: date)),
     );
   }
 }
@@ -176,7 +176,7 @@ class EditEntryScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text('Edit entry'),
       ),
-      body: _EntryForm(entry),
+      body: _EntryForm(initialValue: entry),
     );
   }
 }
@@ -184,7 +184,7 @@ class EditEntryScreen extends StatelessWidget {
 class _EntryForm extends StatefulWidget {
   final Entry initialValue;
 
-  _EntryForm(this.initialValue);
+  _EntryForm({Key key, this.initialValue}) : super(key: key);
 
   @override
   _EntryFormState createState() => _EntryFormState();

@@ -6,7 +6,7 @@ import 'database.dart';
 import 'models.dart';
 
 class EntryList extends ChangeNotifier {
-  static final EntryList _singleton = new EntryList._internal();
+  static final EntryList _singleton = EntryList._internal();
   List<Entry> _entries = [];
 
   EntryList._internal() {

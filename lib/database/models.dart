@@ -1,9 +1,13 @@
 import 'package:intl/intl.dart';
 
 class Entry {
+  // Unique id.
   int id;
+  // A description or name for the entry.
   String name;
+  // The number of kCal consumed.
   int calories;
+  // The date the food was consumed.
   Date date;
 
   Entry({
@@ -20,8 +24,11 @@ class Entry {
 }
 
 class Weight {
+  // Unique id
   int id;
+  // The time the weight was measured.
   DateTime time;
+  // The weight measured in kilograms.
   double weight;
 
   Weight({
