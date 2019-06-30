@@ -19,8 +19,7 @@ class _CalorieTrackerState extends State<CalorieTracker> {
   Date date = Date.fromDateTime(DateTime.now());
 
   onCreateEntryPressed() {
-    Navigator.push(context,
-        MaterialPageRoute(builder: (context) => AddEntryPage(date: date)));
+    Navigator.pushNamed(context, AddEntryScreen.routeName, arguments: date);
   }
 
   static Date dateFromPageIndex(int index) {
@@ -55,8 +54,7 @@ class _EntriesForDate extends StatelessWidget {
 
   _EntriesForDate({Key key, this.date}) : super(key: key);
 
-  _showActions(
-      BuildContext context, EntryList entryList, Entry entry) async {
+  _showActions(BuildContext context, EntryList entryList, Entry entry) async {
     switch (await showDialog<EntryAction>(
       context: context,
       builder: (BuildContext context) => SimpleDialog(
@@ -74,10 +72,7 @@ class _EntriesForDate extends StatelessWidget {
           ),
     )) {
       case EntryAction.Edit:
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => EditEntryPage(entry: entry)));
+        Navigator.pushNamed(context, EditEntryScreen.routeName, arguments: entry);
         Scaffold.of(context)
             .showSnackBar(SnackBar(content: Text('Entry Saved')));
         break;

@@ -8,7 +8,9 @@ import 'date_time_picker.dart';
 import 'models.dart';
 import 'weight_list.dart';
 
-class AddWeightPage extends StatelessWidget {
+class AddWeightScreen extends StatelessWidget {
+  static const routeName = '/weight/add';
+
   @override
   Widget build(BuildContext context) {
     DateTime now = DateTime.now().toUtc();
@@ -28,13 +30,13 @@ class AddWeightPage extends StatelessWidget {
   }
 }
 
-class EditWeightPage extends StatelessWidget {
-  final Weight weight;
-
-  EditWeightPage({Key key, Weight this.weight}) : super(key: key);
+class EditWeightScreen extends StatelessWidget {
+  static const routeName = '/weight/edit';
 
   @override
   Widget build(BuildContext context) {
+    final Weight weight = ModalRoute.of(context).settings.arguments;
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Edit weight'),

@@ -8,11 +8,11 @@ import 'models.dart';
 
 class WeightTracker extends StatelessWidget {
   _onCreateWeightPressed(context) {
-    Navigator.push(
-        context, MaterialPageRoute(builder: (context) => AddWeightPage()));
+    Navigator.pushNamed(context, AddWeightScreen.routeName);
   }
 
-  _showActions(BuildContext context, WeightList weightList, Weight weight) async {
+  _showActions(
+      BuildContext context, WeightList weightList, Weight weight) async {
     switch (await showDialog<WeightAction>(
       context: context,
       builder: (BuildContext context) => SimpleDialog(
@@ -30,10 +30,8 @@ class WeightTracker extends StatelessWidget {
           ),
     )) {
       case WeightAction.Edit:
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => EditWeightPage(weight: weight)));
+        Navigator.pushNamed(context, EditWeightScreen.routeName,
+            arguments: weight);
         Scaffold.of(context)
             .showSnackBar(SnackBar(content: Text('Weight Saved')));
         break;
@@ -48,8 +46,8 @@ class WeightTracker extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer<WeightList>(builder: (context, weightList, child) {
-      var sortedWeights = weightList.list
-          .toList()..sort((a, b) => b.time.compareTo(a.time));
+      var sortedWeights = weightList.list.toList()
+        ..sort((a, b) => b.time.compareTo(a.time));
       var weightRows = sortedWeights
           .map((weight) => InkWell(
                 onTap: () => _showActions(context, weightList, weight),

@@ -6,13 +6,13 @@ import 'date.dart';
 import 'entry_list.dart';
 import 'models.dart';
 
-class AddEntryPage extends StatelessWidget {
-  final Date date;
-
-  AddEntryPage({Key key, Date this.date}) : super(key: key);
+class AddEntryScreen extends StatelessWidget {
+  static const routeName = '/entry/add';
 
   @override
   Widget build(BuildContext context) {
+    final Date date = ModalRoute.of(context).settings.arguments;
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Add entry for ${date.display}'),
@@ -22,13 +22,13 @@ class AddEntryPage extends StatelessWidget {
   }
 }
 
-class EditEntryPage extends StatelessWidget {
-  final Entry entry;
-
-  EditEntryPage({Key key, Entry this.entry}) : super(key: key);
+class EditEntryScreen extends StatelessWidget {
+  static const routeName = '/entry/edit';
 
   @override
   Widget build(BuildContext context) {
+    final Entry entry = ModalRoute.of(context).settings.arguments;
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Edit entry'),
