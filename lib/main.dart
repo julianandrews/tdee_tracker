@@ -28,18 +28,18 @@ class TDEETrackerApp extends StatefulWidget {
 }
 
 class _TDEETrackerAppState extends State<TDEETrackerApp> {
-  Settings _settings;
+  bool _initialized = false;
 
   @override
   initState() {
     Settings.initialize().then((settings) {
-      setState(() => _settings = settings);
+      setState(() => _initialized = true);
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_settings == null) {
+    if (!_initialized) {
       return PlaceholderApp();
     }
     return MaterialApp(
