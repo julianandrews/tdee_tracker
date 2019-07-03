@@ -15,13 +15,17 @@ class SettingsScreen extends StatelessWidget {
         ),
         body: Column(
           children: <Widget>[
-            SwitchListTile(
-              title: Text('Use Pounds'),
-              value: settings.units == WeightUnits.Pounds,
-              onChanged: (value) {
-                settings.setUnits(
-                    value ? WeightUnits.Pounds : WeightUnits.Kilograms);
-              },
+            Center(
+              child: DropdownButton<WeightUnits>(
+                value: settings.units,
+                onChanged: settings.setUnits,
+                items: WeightUnits.values.map((WeightUnits value) {
+                  return DropdownMenuItem<WeightUnits>(
+                    value: value,
+                    child: Text(WeightUnitsHelper.unitName(value)),
+                  );
+                }).toList(),
+              ),
             ),
           ],
         ),

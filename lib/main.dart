@@ -9,12 +9,18 @@ import 'weight_screens.dart';
 import 'database/entry_list.dart';
 import 'database/weight_list.dart';
 
-void main() => runApp(ChangeNotifierProvider(
-    builder: (context) => Settings(),
-    child: ChangeNotifierProvider(
-        builder: (context) => EntryList(),
+void main() => runApp(
+      ChangeNotifierProvider(
+        builder: (context) => Settings(),
         child: ChangeNotifierProvider(
-            builder: (context) => WeightList(), child: TDEETrackerApp()))));
+          builder: (context) => EntryList(),
+          child: ChangeNotifierProvider(
+            builder: (context) => WeightList(),
+            child: TDEETrackerApp(),
+          ),
+        ),
+      ),
+    );
 
 class TDEETrackerApp extends StatefulWidget {
   @override
@@ -43,10 +49,8 @@ class _TDEETrackerAppState extends State<TDEETrackerApp> {
         SettingsScreen.routeName: (context) => SettingsScreen(),
         AddEntryScreen.routeName: (context) => AddEntryScreen(),
         EditEntryScreen.routeName: (context) => EditEntryScreen(),
-        AddWeightScreen.routeName: (context) =>
-            AddWeightScreen(units: _settings.units),
-        EditWeightScreen.routeName: (context) =>
-            EditWeightScreen(units: _settings.units),
+        AddWeightScreen.routeName: (context) => AddWeightScreen(),
+        EditWeightScreen.routeName: (context) => EditWeightScreen(),
       },
     );
   }
