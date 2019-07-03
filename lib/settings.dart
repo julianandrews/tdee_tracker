@@ -12,6 +12,8 @@ class Settings extends ChangeNotifier {
 
   Settings._internal() {}
 
+  factory Settings() => _singleton;
+
   static Future<Settings> initialize() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     _singleton._units = WeightUnits.values[prefs.getInt('weight-units') ?? 0];

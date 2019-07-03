@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'settings.dart';
 
@@ -7,11 +8,24 @@ class SettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return Consumer<Settings>(builder: (context, settings, child) {
+      return Scaffold(
         appBar: AppBar(
-            title: const Text('TDEE Tracker Settings'),
+          title: const Text('TDEE Tracker Settings'),
         ),
-        body: Text("Foo"),
-    );
+        body: Column(
+          children: <Widget>[
+            SwitchListTile(
+              title: Text('Use Pounds'),
+              value: settings.units == WeightUnits.Pounds,
+              onChanged: (value) {
+                settings.setUnits(
+                    value ? WeightUnits.Pounds : WeightUnits.Kilograms);
+              },
+            ),
+          ],
+        ),
+      );
+    });
   }
 }
