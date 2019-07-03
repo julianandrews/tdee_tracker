@@ -72,13 +72,13 @@ class _EntriesForDate extends StatelessWidget {
     )) {
       case _EntryAction.Edit:
         Navigator.pushNamed(context, EditEntryScreen.routeName, arguments: entry);
-        // TODO: Don't show this snackboard on navigate back
+        // TODO: Don't show this snackbar on navigate back
         Scaffold.of(context)
             .showSnackBar(SnackBar(content: Text('Entry Saved')));
         break;
       case _EntryAction.Delete:
         await entryList.delete(entry);
-        // TODO: Don't show this snackboard on navigate back
+        // TODO: Don't show this snackbar on navigate back
         Scaffold.of(context)
             .showSnackBar(SnackBar(content: Text('Entry Deleted')));
         break;
@@ -174,7 +174,7 @@ class EditEntryScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Edit entry'),
+        title: const Text('Edit entry'),
       ),
       body: _EntryForm(initialValue: entry),
     );

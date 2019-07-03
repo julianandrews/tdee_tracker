@@ -20,7 +20,6 @@ class TDEETrackerApp extends StatefulWidget {
 }
 
 class _TDEETrackerAppState extends State<TDEETrackerApp> {
-  bool _initialized = false;
   Settings _settings;
 
   @override

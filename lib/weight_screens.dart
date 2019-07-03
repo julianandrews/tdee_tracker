@@ -34,13 +34,13 @@ class WeightTracker extends StatelessWidget {
       case _WeightAction.Edit:
         Navigator.pushNamed(context, EditWeightScreen.routeName,
             arguments: weight);
-        // TODO: Don't show this snackboard on navigate back
+        // TODO: Don't show this snackbar on navigate back
         Scaffold.of(context)
             .showSnackBar(SnackBar(content: Text('Weight Saved')));
         break;
       case _WeightAction.Delete:
         await weightList.delete(weight);
-        // TODO: Don't show this snackboard on navigate back
+        // TODO: Don't show this snackbar on navigate back
         Scaffold.of(context)
             .showSnackBar(SnackBar(content: Text('Weight Deleted')));
         break;
