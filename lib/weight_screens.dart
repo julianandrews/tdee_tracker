@@ -94,13 +94,13 @@ class _WeightRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer<Settings>(builder: (context, settings, child) {
-      String formattedDate =
+      String formattedLocalTime =
           DateFormat("E, M/d/y").add_jm().format(weight.time.toLocal());
       String unitName = WeightUnitsHelper.unitNameShort(settings.units);
       double convertedWeight =
           WeightUnitsHelper.weightInUnits(weight, settings.units);
       return Row(children: [
-        Expanded(child: Text(formattedDate)),
+        Expanded(child: Text(formattedLocalTime)),
         Text("${convertedWeight} ${unitName}"),
       ]);
     });
@@ -112,9 +112,10 @@ class AddWeightScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    DateTime now = DateTime.now().toUtc();
+    DateTime now = DateTime.now();
     final Weight initialValue = Weight(
-        time: DateTime(now.year, now.month, now.day, now.hour, now.minute));
+        time: DateTime(now.year, now.month, now.day, now.hour, now.minute)
+            .toUtc());
     return Scaffold(
       appBar: AppBar(
         title: const Text('Add weight'),
@@ -156,7 +157,7 @@ class _WeightForm extends StatefulWidget {
 
 class _WeightFormState extends State<_WeightForm> {
   TextEditingController _weightController;
-  DateTime _selectedTime;
+  DateTime _selectedLocalTime;
   bool _saveEnabled = false;
 
   @override
@@ -166,7 +167,7 @@ class _WeightFormState extends State<_WeightForm> {
         : WeightUnitsHelper.weightInUnits(widget.initialValue, widget.units);
     _weightController = TextEditingController(text: weight?.toString());
     _saveEnabled = !_weightController.text.isEmpty;
-    _selectedTime = widget.initialValue.time;
+    _selectedLocalTime = widget.initialValue.time.toLocal();
   }
 
   _submitForm(context, weightList) async {
@@ -175,13 +176,13 @@ class _WeightFormState extends State<_WeightForm> {
     if (widget.initialValue.id == null) {
       await weightList.add(Weight(
         weight: weight,
-        time: _selectedTime,
+        time: _selectedLocalTime.toUtc(),
       ));
     } else {
       await weightList.update(Weight(
         id: widget.initialValue.id,
         weight: weight,
-        time: _selectedTime,
+        time: _selectedLocalTime.toUtc(),
       ));
     }
     Navigator.pop(context);
@@ -206,25 +207,25 @@ class _WeightFormState extends State<_WeightForm> {
           onChanged: (value) => setState(() => _saveEnabled = !value.isEmpty),
         ),
         DateTimePicker(
-          selectedDate: _selectedTime,
-          selectedTime: TimeOfDay.fromDateTime(_selectedTime),
+          selectedDate: _selectedLocalTime,
+          selectedTime: TimeOfDay.fromDateTime(_selectedLocalTime),
           selectDate: (date) {
             setState(() {
-              _selectedTime = DateTime(
+              _selectedLocalTime = DateTime(
                 date.year,
                 date.month,
                 date.day,
-                _selectedTime.hour,
-                _selectedTime.minute,
+                _selectedLocalTime.hour,
+                _selectedLocalTime.minute,
               );
             });
           },
           selectTime: (time) {
             setState(() {
-              _selectedTime = DateTime(
-                _selectedTime.year,
-                _selectedTime.month,
-                _selectedTime.day,
+              _selectedLocalTime = DateTime(
+                _selectedLocalTime.year,
+                _selectedLocalTime.month,
+                _selectedLocalTime.day,
                 time.hour,
                 time.minute,
               );

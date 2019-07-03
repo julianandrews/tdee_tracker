@@ -26,7 +26,7 @@ class Entry {
 class Weight {
   // Unique id
   int id;
-  // The time the weight was measured.
+  // The time the weight was measured in UTC.
   DateTime time;
   // The weight measured in kilograms.
   double weight;
