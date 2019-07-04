@@ -49,6 +49,7 @@ class WeightUnitsHelper {
 class Settings extends ChangeNotifier {
   static final Settings _singleton = Settings._internal();
   WeightUnits _units;
+  int _goal;
 
   Settings._internal() {}
 
@@ -57,6 +58,7 @@ class Settings extends ChangeNotifier {
   static Future<Settings> initialize() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     _singleton._units = WeightUnits.values[prefs.getInt('weight-units') ?? 0];
+    _singleton._goal = prefs.getInt('goal') ?? 0;
     return _singleton;
   }
 
@@ -66,6 +68,15 @@ class Settings extends ChangeNotifier {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setInt('weight-units', units.index);
     _singleton._units = units;
+    notifyListeners();
+  }
+
+  int get goal => _goal;
+
+  setGoal(int goal) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('goal', goal);
+    _singleton._goal = goal;
     notifyListeners();
   }
 }
