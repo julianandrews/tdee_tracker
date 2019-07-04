@@ -43,6 +43,24 @@ class Weight {
   }
 }
 
+class Goal {
+  // Unique id.
+  int id;
+  // The date the goal info was active.
+  Date date;
+  // The estimated TDEE based on data before this date.
+  int tdee;
+  // The goal as a difference in calories from TDEE. Set at end of day.
+  int goal;
+
+  Goal({
+    this.id,
+    this.date,
+    this.tdee,
+    this.goal,
+  });
+}
+
 class Date {
   final int year;
   final int month;

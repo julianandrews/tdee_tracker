@@ -8,7 +8,7 @@ import 'package:sqflite/sqflite.dart';
 import 'models.dart';
 
 class CalorieTrackerDatabase {
-  static const _filename = 'calorie-tracker.db';
+  static const _filename = 'tdee-tracker.db';
   static final _singleton = CalorieTrackerDatabase._internal();
   static Database _database;
 
@@ -28,7 +28,7 @@ class CalorieTrackerDatabase {
 
   insertEntry(Entry entry) async {
     final db = await database;
-    return await db.insert('entries', {
+    await db.insert('entries', {
       'date': entry.date.isoFormat,
       'name': entry.name,
       'calories': entry.calories,
@@ -70,7 +70,7 @@ class CalorieTrackerDatabase {
 
   insertWeight(Weight weight) async {
     final db = await database;
-    return await db.insert('weights', {
+    await db.insert('weights', {
       'timestamp': weight.time.millisecondsSinceEpoch,
       'weight': weight.weight
     });
@@ -107,6 +107,47 @@ class CalorieTrackerDatabase {
         : [];
   }
 
+  Future<Goal> getGoal(Date date) async {
+    final db = await database;
+    var results = await db.query(
+      'goals',
+      where: 'date = ?',
+      whereArgs: [date.isoFormat],
+    );
+
+    return results.isNotEmpty
+        ? Goal(
+            id: results.first['id'],
+            date: Date.parse(results.first['date']),
+            tdee: results.first['tdee'],
+            goal: results.first['goal'],
+          )
+        : null;
+  }
+
+  insertGoal(Goal goal) async {
+    final db = await database;
+    await db.insert('goals', {
+      'date': goal.date.isoFormat,
+      'tdee': goal.tdee,
+      'goal': goal.goal,
+    });
+  }
+
+  updateGoal(Goal goal) async {
+    final db = await database;
+    await db.update(
+      'goals',
+      {
+        'date': goal.date.isoFormat,
+        'tdee': goal.tdee,
+        'goal': goal.goal,
+      },
+      where: 'id = ?',
+      whereArgs: [goal.id],
+    );
+  }
+
   _initializeDatabase() async {
     var databasesPath = await getDatabasesPath();
     var path = join(databasesPath, _filename);
@@ -125,16 +166,24 @@ class CalorieTrackerDatabase {
     await database.execute('''
         CREATE TABLE weights(
           id INTEGER PRIMARY KEY,
-          timestamp INTEGER,
-          weight REAL
+          timestamp INTEGER NOT NULL,
+          weight REAL NOT NULL
           )
         ''');
     await database.execute('''
         CREATE TABLE entries(
             id INTEGER PRIMARY KEY,
-            date TEXT,
-            name TEXT,
-            calories INTEGER
+            date TEXT NOT NULL,
+            name TEXT NOT NULL,
+            calories INTEGER NOT NULL
+            )
+        ''');
+    await database.execute('''
+        CREATE TABLE goals(
+            id INTEGER PRIMARY KEY,
+            date TEXT NOT NULL UNIQUE,
+            tdee INTEGER NOT NULL,
+            goal INTEGER NOT NULL
             )
         ''');
   }
