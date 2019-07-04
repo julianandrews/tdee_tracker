@@ -9,8 +9,13 @@ import 'database/models.dart';
 import 'database/weight_list.dart';
 
 class WeightTracker extends StatelessWidget {
-  _onCreateWeightPressed(context) {
-    Navigator.pushNamed(context, AddWeightScreen.routeName);
+  _onCreateWeightPressed(context) async {
+    final result = Navigator.pushNamed(context, AddWeightScreen.routeName);
+    if ((await result) != null) {
+      Scaffold.of(context)
+        ..removeCurrentSnackBar()
+        ..showSnackBar(SnackBar(content: Text('Weight Added')));
+    }
   }
 
   _showActions(
@@ -32,17 +37,22 @@ class WeightTracker extends StatelessWidget {
           ),
     )) {
       case _WeightAction.Edit:
-        Navigator.pushNamed(context, EditWeightScreen.routeName,
-            arguments: weight);
-        // TODO: Don't show this snackbar on navigate back
-        Scaffold.of(context)
-            .showSnackBar(SnackBar(content: Text('Weight Saved')));
+        final Weight result = await Navigator.pushNamed(
+          context,
+          EditWeightScreen.routeName,
+          arguments: weight,
+        ) as Weight;
+        if (result != null) {
+          Scaffold.of(context)
+            ..removeCurrentSnackBar()
+            ..showSnackBar(SnackBar(content: Text('Weight Updated')));
+        }
         break;
       case _WeightAction.Delete:
         await weightList.delete(weight);
-        // TODO: Don't show this snackbar on navigate back
         Scaffold.of(context)
-            .showSnackBar(SnackBar(content: Text('Weight Deleted')));
+          ..removeCurrentSnackBar()
+          ..showSnackBar(SnackBar(content: Text('Weight Deleted')));
         break;
     }
   }
@@ -171,21 +181,19 @@ class _WeightFormState extends State<_WeightForm> {
   }
 
   _submitForm(context, weightList) async {
-    var weight = WeightUnitsHelper.kilosFromUnits(
+    final weightInKilos = WeightUnitsHelper.kilosFromUnits(
         double.parse(_weightController.text), widget.units);
+    Weight weight = Weight(
+      weight: weightInKilos,
+      time: _selectedLocalTime.toUtc(),
+    );
     if (widget.initialValue.id == null) {
-      await weightList.add(Weight(
-        weight: weight,
-        time: _selectedLocalTime.toUtc(),
-      ));
+      await weightList.add(weight);
     } else {
-      await weightList.update(Weight(
-        id: widget.initialValue.id,
-        weight: weight,
-        time: _selectedLocalTime.toUtc(),
-      ));
+      weight.id = widget.initialValue.id;
+      await weightList.update(weight);
     }
-    Navigator.pop(context);
+    Navigator.pop(context, weight);
   }
 
   @override

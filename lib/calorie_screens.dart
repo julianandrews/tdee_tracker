@@ -17,8 +17,13 @@ class _CalorieTrackerState extends State<CalorieTracker> {
       Date.fromDateTime(DateTime.now()).difference(earliestDate);
   Date date = Date.fromDateTime(DateTime.now());
 
-  onCreateEntryPressed() {
-    Navigator.pushNamed(context, AddEntryScreen.routeName, arguments: date);
+  _onCreateEntryPressed() async {
+    final result = Navigator.pushNamed(context, AddEntryScreen.routeName, arguments: date);
+    if ((await result) != null) {
+      Scaffold.of(context)
+        ..removeCurrentSnackBar()
+        ..showSnackBar(SnackBar(content: Text('Entry Added')));
+    }
   }
 
   static Date dateFromPageIndex(int index) {
@@ -32,10 +37,10 @@ class _CalorieTrackerState extends State<CalorieTracker> {
         controller: PageController(initialPage: initialPage),
         itemBuilder: (context, position) =>
             _EntriesForDate(date: dateFromPageIndex(position)),
-        onPageChanged: (value) => date = dateFromPageIndex(value),
+        onPageChanged: (position) => date = dateFromPageIndex(position),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: onCreateEntryPressed,
+        onPressed: _onCreateEntryPressed,
         tooltip: 'Create Entry',
         child: Icon(Icons.add),
       ),
@@ -71,16 +76,22 @@ class _EntriesForDate extends StatelessWidget {
           ),
     )) {
       case _EntryAction.Edit:
-        Navigator.pushNamed(context, EditEntryScreen.routeName, arguments: entry);
-        // TODO: Don't show this snackbar on navigate back
-        Scaffold.of(context)
-            .showSnackBar(SnackBar(content: Text('Entry Saved')));
+        final Entry result = await Navigator.pushNamed(
+          context,
+          EditEntryScreen.routeName,
+          arguments: entry,
+        ) as Entry;
+        if (result != null) {
+          Scaffold.of(context)
+            ..removeCurrentSnackBar()
+            ..showSnackBar(SnackBar(content: Text('Entry Updated')));
+        }
         break;
       case _EntryAction.Delete:
         await entryList.delete(entry);
-        // TODO: Don't show this snackbar on navigate back
         Scaffold.of(context)
-            .showSnackBar(SnackBar(content: Text('Entry Deleted')));
+          ..removeCurrentSnackBar()
+          ..showSnackBar(SnackBar(content: Text('Entry Deleted')));
         break;
     }
   }
@@ -149,6 +160,7 @@ class _EntryRow extends StatelessWidget {
         ]));
   }
 }
+
 class AddEntryScreen extends StatelessWidget {
   static const routeName = '/entry/add';
 
@@ -197,57 +209,55 @@ class _EntryFormState extends State<_EntryForm> {
 
   @override
   initState() {
-    _descriptionController = TextEditingController(text: widget.initialValue.name);
+    _descriptionController =
+        TextEditingController(text: widget.initialValue.name);
     _caloriesController =
         TextEditingController(text: widget.initialValue.calories?.toString());
     _saveEnabled = !_descriptionController.text.isEmpty;
   }
 
   _submitForm(context, entryList) async {
+    Entry entry = Entry(
+      name: _descriptionController.text,
+      calories: int.parse(_caloriesController.text),
+      date: widget.initialValue.date,
+    );
     if (widget.initialValue.id == null) {
-      await entryList.add(Entry(
-        name: _descriptionController.text,
-        calories: int.parse(_caloriesController.text),
-        date: widget.initialValue.date,
-      ));
+      await entryList.add(entry);
     } else {
-      await entryList.update(Entry(
-        id: widget.initialValue.id,
-        name: _descriptionController.text,
-        calories: int.parse(_caloriesController.text),
-        date: widget.initialValue.date,
-      ));
+      entry.id = widget.initialValue.id;
+      await entryList.update(entry);
     }
-    Navigator.pop(context);
+    Navigator.pop(context, entry);
   }
 
   @override
   Widget build(BuildContext context) {
-        return Column(
-          children: <Widget>[
-            TextField(
-              controller: _descriptionController,
-              decoration: const InputDecoration(
-                hintText: 'Description of food',
-              ),
-              onChanged: (value) => setState(() => _saveEnabled = !value.isEmpty),
-            ),
-            TextField(
-              controller: _caloriesController,
-              decoration: const InputDecoration(
-                hintText: 'Calories',
-              ),
-              inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
-              keyboardType: TextInputType.number,
-            ),
-            Consumer<EntryList>(
-                builder: (context, entryList, child) => RaisedButton(
-                      onPressed: _saveEnabled
-                          ? () => _submitForm(context, entryList)
-                          : null,
-                      child: Text('Save'),
-                    )),
-          ],
-        );
+    return Column(
+      children: <Widget>[
+        TextField(
+          controller: _descriptionController,
+          decoration: const InputDecoration(
+            hintText: 'Description of food',
+          ),
+          onChanged: (value) => setState(() => _saveEnabled = !value.isEmpty),
+        ),
+        TextField(
+          controller: _caloriesController,
+          decoration: const InputDecoration(
+            hintText: 'Calories',
+          ),
+          inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
+          keyboardType: TextInputType.number,
+        ),
+        Consumer<EntryList>(
+            builder: (context, entryList, child) => RaisedButton(
+                  onPressed: _saveEnabled
+                      ? () => _submitForm(context, entryList)
+                      : null,
+                  child: Text('Save'),
+                )),
+      ],
+    );
   }
 }
