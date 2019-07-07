@@ -10,17 +10,15 @@ import 'database/entry_list.dart';
 import 'database/weight_list.dart';
 
 void main() => runApp(
-      ChangeNotifierProvider(
-        builder: (context) => Settings(),
-        child: ChangeNotifierProvider(
-          builder: (context) => EntryList(),
-          child: ChangeNotifierProvider(
-            builder: (context) => WeightList(),
-            child: TDEETrackerApp(),
-          ),
-        ),
-      ),
-    );
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(builder: (context) => Settings()),
+        ChangeNotifierProvider(builder: (context) => EntryList()),
+        ChangeNotifierProvider(builder: (context) => WeightList()),
+      ],
+      child: TDEETrackerApp(),
+    )
+  );
 
 class TDEETrackerApp extends StatefulWidget {
   @override
