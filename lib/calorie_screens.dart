@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/services.dart';
 
-import 'database/entry_list.dart';
+import 'database/entries.dart';
 import 'database/models.dart';
 
 class CalorieTracker extends StatefulWidget {
@@ -58,7 +58,7 @@ class _EntriesForDate extends StatelessWidget {
 
   _EntriesForDate({Key key, this.date}) : super(key: key);
 
-  _showActions(BuildContext context, EntryList entryList, Entry entry) async {
+  _showActions(BuildContext context, Entries entries, Entry entry) async {
     switch (await showDialog<_EntryAction>(
       context: context,
       builder: (BuildContext context) => SimpleDialog(
@@ -88,7 +88,7 @@ class _EntriesForDate extends StatelessWidget {
         }
         break;
       case _EntryAction.Delete:
-        await entryList.delete(entry);
+        await entries.delete(entry);
         Scaffold.of(context)
           ..removeCurrentSnackBar()
           ..showSnackBar(SnackBar(content: Text('Entry Deleted')));
@@ -99,11 +99,11 @@ class _EntriesForDate extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // TODO: Handle the empty entry list with a nice indicator.
-    return Consumer<EntryList>(builder: (context, entryList, child) {
-      var entryRows = entryList
+    return Consumer<Entries>(builder: (context, entries, child) {
+      var entryRows = entries
           .forDate(date)
           .map((entry) => InkWell(
-                onTap: () => _showActions(context, entryList, entry),
+                onTap: () => _showActions(context, entries, entry),
                 child: _EntryRow(entry: entry),
               ))
           .toList();
@@ -111,7 +111,7 @@ class _EntriesForDate extends StatelessWidget {
         Padding(
             padding: EdgeInsets.all(8.0),
             child: _EntriesHeader(
-                date: date, totalCalories: entryList.totalCalories(date))),
+                date: date, totalCalories: entries.totalCalories(date))),
         Expanded(
             child: Scrollbar(
                 child: ListView.separated(
@@ -136,7 +136,7 @@ class _EntriesHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(children: [
       Expanded(child: Text(date.display)),
-      Text("${totalCalories}")
+      Text("${totalCalories}"),
     ]);
   }
 }
@@ -216,17 +216,17 @@ class _EntryFormState extends State<_EntryForm> {
     _saveEnabled = !_descriptionController.text.isEmpty;
   }
 
-  _submitForm(context, entryList) async {
+  _submitForm(context, entries) async {
     Entry entry = Entry(
       name: _descriptionController.text,
       calories: int.parse(_caloriesController.text),
       date: widget.initialValue.date,
     );
     if (widget.initialValue.id == null) {
-      await entryList.add(entry);
+      await entries.add(entry);
     } else {
       entry.id = widget.initialValue.id;
-      await entryList.update(entry);
+      await entries.update(entry);
     }
     Navigator.pop(context, entry);
   }
@@ -250,10 +250,10 @@ class _EntryFormState extends State<_EntryForm> {
           inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
           keyboardType: TextInputType.number,
         ),
-        Consumer<EntryList>(
-            builder: (context, entryList, child) => RaisedButton(
+        Consumer<Entries>(
+            builder: (context, entries, child) => RaisedButton(
                   onPressed: _saveEnabled
-                      ? () => _submitForm(context, entryList)
+                      ? () => _submitForm(context, entries)
                       : null,
                   child: Text('Save'),
                 )),

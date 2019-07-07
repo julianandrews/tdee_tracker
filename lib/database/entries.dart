@@ -5,18 +5,18 @@ import 'package:flutter/widgets.dart';
 import 'database.dart';
 import 'models.dart';
 
-class EntryList extends ChangeNotifier {
-  static final EntryList _singleton = EntryList._internal();
+class Entries extends ChangeNotifier {
+  static final Entries _singleton = Entries._internal();
   List<Entry> _entries = [];
 
-  EntryList._internal() {
+  Entries._internal() {
     CalorieTrackerDatabase().listEntries().then((entries) {
       _entries = entries;
       notifyListeners();
     });
   }
 
-  factory EntryList() {
+  factory Entries() {
     return _singleton;
   }
 

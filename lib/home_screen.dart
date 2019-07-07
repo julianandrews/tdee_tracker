@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'calorie_screens.dart';
 import 'settings_screen.dart';
 import 'weight_screens.dart';
-import 'database/entry_list.dart';
-import 'database/weight_list.dart';
+import 'database/entries.dart';
+import 'database/weights.dart';
 
 class HomeScreen extends StatelessWidget {
   @override

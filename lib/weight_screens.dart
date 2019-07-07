@@ -6,7 +6,7 @@ import 'settings.dart';
 import 'utils/date_time_picker.dart';
 import 'utils/input_formatters.dart';
 import 'database/models.dart';
-import 'database/weight_list.dart';
+import 'database/weights.dart';
 
 class WeightTracker extends StatelessWidget {
   _onCreateWeightPressed(context) async {
@@ -19,7 +19,7 @@ class WeightTracker extends StatelessWidget {
   }
 
   _showActions(
-      BuildContext context, WeightList weightList, Weight weight) async {
+      BuildContext context, Weights weights, Weight weight) async {
     switch (await showDialog<_WeightAction>(
       context: context,
       builder: (BuildContext context) => SimpleDialog(
@@ -49,7 +49,7 @@ class WeightTracker extends StatelessWidget {
         }
         break;
       case _WeightAction.Delete:
-        await weightList.delete(weight);
+        await weights.delete(weight);
         Scaffold.of(context)
           ..removeCurrentSnackBar()
           ..showSnackBar(SnackBar(content: Text('Weight Deleted')));
@@ -59,12 +59,12 @@ class WeightTracker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<WeightList>(builder: (context, weightList, child) {
-      var sortedWeights = weightList.list.toList()
+    return Consumer<Weights>(builder: (context, weights, child) {
+      var sortedWeights = weights.list.toList()
         ..sort((a, b) => b.time.compareTo(a.time));
       var weightRows = sortedWeights
           .map((weight) => InkWell(
-                onTap: () => _showActions(context, weightList, weight),
+                onTap: () => _showActions(context, weights, weight),
                 child: _WeightRow(weight: weight),
               ))
           .toList();
@@ -180,7 +180,7 @@ class _WeightFormState extends State<_WeightForm> {
     _selectedLocalTime = widget.initialValue.time.toLocal();
   }
 
-  _submitForm(context, weightList) async {
+  _submitForm(context, weights) async {
     final weightInKilos = WeightUnitsHelper.kilosFromUnits(
         double.parse(_weightController.text), widget.units);
     Weight weight = Weight(
@@ -188,10 +188,10 @@ class _WeightFormState extends State<_WeightForm> {
       time: _selectedLocalTime.toUtc(),
     );
     if (widget.initialValue.id == null) {
-      await weightList.add(weight);
+      await weights.add(weight);
     } else {
       weight.id = widget.initialValue.id;
-      await weightList.update(weight);
+      await weights.update(weight);
     }
     Navigator.pop(context, weight);
   }
@@ -240,10 +240,10 @@ class _WeightFormState extends State<_WeightForm> {
             });
           },
         ),
-        Consumer<WeightList>(
-            builder: (context, weightList, child) => RaisedButton(
+        Consumer<Weights>(
+            builder: (context, weights, child) => RaisedButton(
                   onPressed: _saveEnabled
-                      ? () => _submitForm(context, weightList)
+                      ? () => _submitForm(context, weights)
                       : null,
                   child: Text('Save'),
                 )),

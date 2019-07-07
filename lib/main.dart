@@ -6,15 +6,15 @@ import 'calorie_screens.dart';
 import 'settings.dart';
 import 'settings_screen.dart';
 import 'weight_screens.dart';
-import 'database/entry_list.dart';
-import 'database/weight_list.dart';
+import 'database/entries.dart';
+import 'database/weights.dart';
 
 void main() => runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(builder: (context) => Settings()),
-        ChangeNotifierProvider(builder: (context) => EntryList()),
-        ChangeNotifierProvider(builder: (context) => WeightList()),
+        ChangeNotifierProvider(builder: (context) => Entries()),
+        ChangeNotifierProvider(builder: (context) => Weights()),
       ],
       child: TDEETrackerApp(),
     )
