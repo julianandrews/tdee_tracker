@@ -7,6 +7,7 @@ import 'settings.dart';
 import 'settings_screen.dart';
 import 'weight_screens.dart';
 import 'database/entries.dart';
+import 'database/goals.dart';
 import 'database/weights.dart';
 
 void main() => runApp(
@@ -15,6 +16,7 @@ void main() => runApp(
         ChangeNotifierProvider(builder: (context) => Settings()),
         ChangeNotifierProvider(builder: (context) => Entries()),
         ChangeNotifierProvider(builder: (context) => Weights()),
+        ChangeNotifierProvider(builder: (context) => Goals()),
       ],
       child: TDEETrackerApp(),
     )

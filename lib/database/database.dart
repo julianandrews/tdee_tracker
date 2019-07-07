@@ -55,7 +55,7 @@ class CalorieTrackerDatabase {
 
   Future<List<Entry>> listEntries() async {
     final db = await database;
-    var results = await db.query('entries');
+    final results = await db.query('entries');
     return results.isNotEmpty
         ? results
             .map((row) => Entry(
@@ -95,7 +95,7 @@ class CalorieTrackerDatabase {
 
   Future<List<Weight>> listWeights() async {
     final db = await database;
-    var results = await db.query('weights');
+    final results = await db.query('weights');
     return results.isNotEmpty
         ? results
             .map((row) => Weight(
@@ -105,24 +105,6 @@ class CalorieTrackerDatabase {
                 ))
             .toList()
         : [];
-  }
-
-  Future<Goal> getGoal(Date date) async {
-    final db = await database;
-    var results = await db.query(
-      'goals',
-      where: 'date = ?',
-      whereArgs: [date.isoFormat],
-    );
-
-    return results.isNotEmpty
-        ? Goal(
-            id: results.first['id'],
-            date: Date.parse(results.first['date']),
-            tdee: results.first['tdee'],
-            goal: results.first['goal'],
-          )
-        : null;
   }
 
   insertGoal(Goal goal) async {
@@ -148,11 +130,26 @@ class CalorieTrackerDatabase {
     );
   }
 
-  _initializeDatabase() async {
-    var databasesPath = await getDatabasesPath();
-    var path = join(databasesPath, _filename);
+  Future<List<Goal>> listGoals() async {
+    final db = await database;
+    final results = await db.query('goals');
+    return results.isNotEmpty
+        ? results
+            .map((row) => Goal(
+                  id: row['id'],
+                  date: Date.parse(row['date']),
+                  tdee: row['tdee'],
+                  goal: row['goal'],
+                ))
+            .toList()
+        : [];
+  }
 
-    var exists = await databaseExists(path);
+  _initializeDatabase() async {
+    final databasesPath = await getDatabasesPath();
+    final path = join(databasesPath, _filename);
+
+    final exists = await databaseExists(path);
     if (!exists) {
       try {
         await Directory(dirname(path)).create(recursive: true);

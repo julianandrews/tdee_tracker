@@ -109,4 +109,9 @@ class Date {
   String toString() {
     return "Date[year=${year}, month=${month}, day=${day}]";
   }
+
+  @override
+  int get hashCode {
+    return 10000 * year + 100 * month + day;
+  }
 }

@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter/services.dart';
 
 import 'database/entries.dart';
+import 'database/goals.dart';
 import 'database/models.dart';
 
 class CalorieTracker extends StatefulWidget {
@@ -136,7 +137,17 @@ class _EntriesHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(children: [
       Expanded(child: Text(date.display)),
-      Text("${totalCalories}"),
+      Consumer<Goals>(
+        builder: (context, goals, child) {
+          final Goal goal = goals.forDate(date);
+          if (goal != null) {
+            final int goalCalories = goal.tdee + goal.goal;
+            return Text("${totalCalories} / ${goalCalories}");
+          } else {
+            return Text("${totalCalories}");
+          }
+        }
+      ),
     ]);
   }
 }
