@@ -211,7 +211,7 @@ class _WeightFormState extends State<_WeightForm> {
           inputFormatters: [
             PositiveDecimalTextInputFormatter(decimalRange: decimalRange)
           ],
-          keyboardType: TextInputType.numberWithOptions(decimal: true),
+          keyboardType: TextInputType.numberWithOptions(decimal: true, signed: false),
           onChanged: (value) => setState(() => _saveEnabled = !value.isEmpty),
         ),
         DateTimePicker(
