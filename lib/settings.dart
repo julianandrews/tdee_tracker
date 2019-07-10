@@ -50,6 +50,7 @@ class Settings extends ChangeNotifier {
   static final Settings _singleton = Settings._internal();
   WeightUnits _units;
   int _goal;
+  int _initialTdee;
 
   Settings._internal() {}
 
@@ -59,6 +60,7 @@ class Settings extends ChangeNotifier {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     _singleton._units = WeightUnits.values[prefs.getInt('weight-units') ?? 0];
     _singleton._goal = prefs.getInt('goal') ?? 0;
+    _singleton._initialTdee = prefs.getInt('initialTdee');
     return _singleton;
   }
 
@@ -77,6 +79,15 @@ class Settings extends ChangeNotifier {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setInt('goal', goal);
     _singleton._goal = goal;
+    notifyListeners();
+  }
+
+  int get initialTdee => _initialTdee;
+
+  setInitialTdee(int tdee) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('initialTdee', tdee);
+    _singleton._initialTdee = tdee;
     notifyListeners();
   }
 }
